@@ -9,15 +9,15 @@ const fs = require("fs")
 //     console.log(chunk)
 // })
 
-
-
 const server = http.createServer((req, res)=>{
     fs.readFile(__dirname + "/shot.png", (err, data)=>{
         res.end(data)
     })
 })
 
-server.listen(3000)
+const port = 3000;
+
+server.listen(port, ()=>{console.log("server listening: ", port)});
 
 
 // const readableStream = new Stream.Readable({

@@ -1,36 +1,48 @@
 const puppeteer = require("puppeteer");
 const http = require("http");
+const Stream = require("stream");
+const { pipeline } = require("stream");
 
 //handle no page error => needs to start capture page on target machine
 
-getShoot().then((screenShot)=>{sendHttpReques(screenShot)});
+let browserSelect = {};
+if(process.platform === "linux"){
+    browserSelect = {executablePath: 'chromium-browser'};
+};
+
+puppeteer.launch(browserSelect).then(async (browser)=>{
+    const page = await browser.newPage();
+    await page.goto("http://192.168.0.3:8080/", {waitUntil: 'networkidle2'});
+    setInterval(async ()=>{
+        const screenShot = await page.screenshot({type: "png", omitBackground: true});
+        sendHttpReques(screenShot)
+    }, 10000);
+});
 
 function sendHttpReques(data){
+    
+    console.log("sending shot");
 
     const options = {
-        hostname: "localhost",
+        hostname: "69.65.91.236",
         port: 3000,
         method: "POST",
     };
 
     const req = http.request(options, res=>{
         console.log("status code: ", res.statusCode)
+        req.end();
     });
     
-    req.write(data);
+    pipeline(bufferToStream(data), req, (err)=>{
+        if(err){console.error(err)};
+    });
     
     req.on("error", error =>{
         console.error(error);
     });
-
-    req.end();
 };
 
-async function getShoot (){
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.goto("http://192.168.0.3:8080/", {waitUntil: 'networkidle2'});
-    const screenShot = await page.screenshot({type: "png", omitBackground: true});
-    await browser.close();
-    return screenShot;
-}
+function bufferToStream(binary){
+    return Stream.Readable.from(binary);
+};
