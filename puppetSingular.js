@@ -11,8 +11,9 @@ function sendHttpReques(data){
 
     const options = {
         hostname: "localhost",
-        port: 3000,
+        port: 3001,
         method: "POST",
+        path:"/api/raspi",
     };
 
     const req = http.request(options, res=>{
