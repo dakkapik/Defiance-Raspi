@@ -15,11 +15,11 @@ puppeteer.launch(browserSelect).then(async (browser)=>{
     await page.goto("http://192.168.0.3:8080/", {waitUntil: 'networkidle2'});
     setInterval(async ()=>{
         const screenShot = await page.screenshot({type: "png", omitBackground: true});
-        sendHttpReques(screenShot)
+        sendHttpRequest(screenShot)
     }, 10000);
 });
 
-function sendHttpReques(data){
+function sendHttpRequest(data){
     
     console.log("sending shot");
 
