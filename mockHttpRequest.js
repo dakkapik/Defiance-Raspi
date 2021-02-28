@@ -1,16 +1,15 @@
-const { fstat } = require("fs");
 const Http = require("http");
 const { pipeline } = require("stream");
-const { createReadStream } = require("fs")
+const { createReadStream } = require("fs");
 
-sendHttpRequest(createReadStream("./img2/2.png"))
+sendHttpRequest(createReadStream("./img2/1.png"));
 
 function sendHttpRequest(stream){
     
     console.log("sending shot");
 
     const options = {
-        hostname: "69.65.91.236",
+        hostname: "localhost",
         port: 3000,
         method: "POST",
         path:"/api/raspi"

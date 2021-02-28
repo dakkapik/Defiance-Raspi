@@ -7,7 +7,7 @@ const worker = createWorker();
     await worker.loadLanguage("eng");
     await worker.initialize("eng");
 
-    const {data: {text} } = await worker.recognize("./god.jpg");
+    const { data: {text} } = await worker.recognize("../img3/4.png");
     console.log(text);
 
     await worker.terminate();
