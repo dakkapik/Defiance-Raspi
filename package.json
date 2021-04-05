@@ -1,0 +1,30 @@
+{
+  "name": "defiance-raspi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "puppet.js",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "chalk": "^4.1.0",
+    "clui": "^0.3.6",
+    "express": "^4.17.1",
+    "figlet": "^1.5.0",
+    "puppeteer": "^7.0.1",
+    "sharp": "^0.27.1",
+    "tesseract.js": "^2.1.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dakkapik/Defiance-Raspi.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dakkapik/Defiance-Raspi/issues"
+  },
+  "homepage": "https://github.com/dakkapik/Defiance-Raspi#readme"
+}

@@ -10,22 +10,34 @@ if(process.platform === "linux"){
     browserSelect = {executablePath: 'chromium-browser'};
 };
 
-puppeteer.launch(browserSelect).then(async (browser)=>{
-    const page = await browser.newPage();
-    await page.goto("http://192.168.0.3:8080/", {waitUntil: 'networkidle2'});
-    setInterval(async ()=>{
-        const screenShot = await page.screenshot({type: "png", omitBackground: true});
-        sendHttpRequest(screenShot)
-    }, 10000);
-});
+startBrowser();
 
-function sendHttpRequest(data){
+setInterval(()=>{
+    startBrowser(); 
+}, 300000)
+
+function startBrowser(){
+    puppeteer.launch(browserSelect).then(async (browser)=>{
+        const page = await browser.newPage();
+        await page.goto("http://192.168.0.3:8080/");
+        const interval = setInterval(async ()=>{
+            const screenShot = await page.screenshot({type: "png", omitBackground: true});
+            sendHttpReques(screenShot)
+        }, 2000);
+        setTimeout(()=>{
+            console.log("reseting browser...");
+            clearInterval(interval);
+        }, 300000);
+    });
+}
+
+function sendHttpReques(data){
     
     console.log("sending shot");
 
     const options = {
         hostname: "69.65.91.236",
-        port: 3000,
+        port: 13131,
         method: "POST",
         path:"/api/raspi"
     };
