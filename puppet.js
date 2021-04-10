@@ -5,7 +5,7 @@ const socket = require("socket.io-client")(ENDPOINT);
 const puppeteer = require("puppeteer");
 
 let browserSelect = {};
-let page = null
+let page = null ;
 
 if(process.platform === "linux"){
     browserSelect = { executablePath: 'chromium-browser' };
@@ -13,35 +13,35 @@ if(process.platform === "linux"){
 
 socket.on("connect", () => {
 
-    console.log("CONNECTION: ", socket.connected)
+    console.log("CONNECTION: ", socket.connected);
     
     startBrowser()
     .then(pag => page = pag)
-    .catch((error) => emitError(error))
+    .catch((error) => emitError(error));
     
-})
+});
 
 socket.on("disconnect", () => {
 
-    console.log("CONNECTION: ", socket.connected)
+    console.log("CONNECTION: ", socket.connected);
 
-})
+});
 
 socket.on("send-capture", () => {
     if(page){
         page.screenshot({type: "png", omitBackground: true})
         .then(screenshot => {
-            socket.emit("capture", screenshot)
+            socket.emit("capture", screenshot);
         })
-        .catch(err => emitError({fn: "screenshot", err}))
-    }
-})
+        .catch(err => emitError({fn: "screenshot", err}));
+    };
+});
 
 function emitError (error) {
-    const { fn, err } = error
-    socket.emit("error", {error})
-    console.error(`${fn} ERROR: ${err}`)
-}
+    const { fn, err } = error;
+    socket.emit("error", error );
+    console.error(`${fn} ERROR: ${err}`);
+};
 
 function startBrowser(){
     return new Promise(( resolve, reject ) => {
@@ -57,5 +57,5 @@ function startBrowser(){
             .catch(err => reject({fn: "newPage", err}))
         })
         .catch(err => reject({fn:"puppeteer.launch", err}))
-    })
-}
+    });
+};
