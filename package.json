@@ -4,6 +4,7 @@
   "description": "",
   "main": "puppet.js",
   "dependencies": {
+    "dotenv": "^8.2.0",
     "puppeteer": "^7.0.1",
     "socket.io-client": "^3.1.1"
   },

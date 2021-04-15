@@ -1,5 +1,7 @@
-const ENDPOINT = "http://69.65.91.236:13131"
-const CAPTURE_IP = "http://192.168.0.3:8080/"
+require("dotenv").config();
+const CAPTURE_IP = process.env.capture_ip;
+const ENDPOINT = process.env.endpoint;
+const STORE = process.env.store;
 
 const socket = require("socket.io-client")(ENDPOINT);
 const puppeteer = require("puppeteer");
@@ -31,7 +33,7 @@ socket.on("send-capture", () => {
     if(page){
         page.screenshot({type: "png", omitBackground: true})
         .then(screenshot => {
-            socket.emit("capture", screenshot);
+            socket.emit("capture", {STORE, screenshot});
         })
         .catch(err => emitError({fn: "screenshot", err}));
     };
