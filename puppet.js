@@ -1,7 +1,27 @@
-require("dotenv").config();
-const CAPTURE_IP = process.env.capture_ip;
-const ENDPOINT = process.env.endpoint;
+require("dotenv").config(); 
+
+if(!process.env.NODE_ENV){
+    console.log("CRITICAL ERROR: NODE_ENV not found");
+    console.log("CRITICAL ERROR: add NODE_ENV to .env file");
+    process.exit();
+}
+if(!process.env.store){
+    console.log("CRITICAL ERROR: store not found");
+    console.log("CRITICAL ERROR: add store to .env file");
+    process.exit();
+}
+
+const { 
+    capture: CAPTURE_IP, 
+    extract: ENDPOINT 
+} = require("config").get("endpoints")
+
 const STORE = process.env.store;
+
+console.log("staring capture client in ", process.env.NODE_ENV, " mode");
+console.log("capture ip: ", CAPTURE_IP);
+console.log("extract endpoint: ", ENDPOINT);
+console.log("selected store: ", STORE);
 
 const socket = require("socket.io-client")(ENDPOINT);
 const puppeteer = require("puppeteer");
@@ -13,31 +33,36 @@ if(process.platform === "linux"){
     browserSelect = { executablePath: 'chromium-browser' };
 };
 
-socket.on("connect", () => {
-
-    console.log("CONNECTION: ", socket.connected);
+if(!process.env.NODE_ENV === "mock"){
+    socket.on("connect", () => {
     
-    startBrowser()
-    .then(pag => page = pag)
-    .catch((error) => emitError(error));
+        console.log("CONNECTION: ", socket.connected);
+        
+        startBrowser()
+        .then(pag => page = pag)
+        .catch((error) => emitError(error));
     
-});
+    });
+    
+    socket.on("disconnect", () => {
+    
+        console.log("CONNECTION: ", socket.connected);
+    
+    });
+    
+    socket.on("send-capture", () => {
+        if(page){
+            page.screenshot({type: "png", omitBackground: true})
+            .then(screenshot => {
+                socket.emit("capture", {STORE, screenshot});
+            })
+            .catch(err => emitError({fn: "screenshot", err}));
+        };
+    });
+} else {
+    require("./mock")(socket)
+}
 
-socket.on("disconnect", () => {
-
-    console.log("CONNECTION: ", socket.connected);
-
-});
-
-socket.on("send-capture", () => {
-    if(page){
-        page.screenshot({type: "png", omitBackground: true})
-        .then(screenshot => {
-            socket.emit("capture", {STORE, screenshot});
-        })
-        .catch(err => emitError({fn: "screenshot", err}));
-    };
-});
 
 function emitError (error) {
     const { fn, err } = error;
