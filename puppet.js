@@ -35,9 +35,11 @@ if(process.platform === "linux"){
 
 if(!process.env.NODE_ENV === "mock"){
     socket.on("connect", () => {
-    
-        console.log("CONNECTION: ", socket.connected);
         
+        socket.emit("set-store", STORE + "-" + process.env.NODE_ENV)
+        
+        console.log("CONNECTION: ", socket.connected);
+
         startBrowser()
         .then(pag => page = pag)
         .catch((error) => emitError(error));

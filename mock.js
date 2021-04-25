@@ -11,6 +11,9 @@ module.exports = function( socket ){
     ]
 
     socket.on("connect", () => {
+
+        socket.emit("set-store", process.env.store + "-" + process.env.NODE_ENV)
+        
         console.log("CONNECTION: ", socket.connected);
         
         screenshot = require("fs").readFileSync(`../mock-images/${mockSelector[select]}`)
