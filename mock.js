@@ -13,7 +13,7 @@ module.exports = function( socket ){
     socket.on("connect", () => {
         console.log("CONNECTION: ", socket.connected);
         
-        screenshot = require("fs").readFileSync(`../mock-images/${mockSelector[select]}`)
+        screenshot = require("fs").readFileSync(`./mock-images/${mockSelector[select]}`)
     });
 
     socket.on("disconnect", () => {
