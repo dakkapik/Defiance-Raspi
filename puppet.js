@@ -33,7 +33,7 @@ if(process.platform === "linux"){
     browserSelect = { executablePath: 'chromium-browser' };
 };
 
-if(!process.env.NODE_ENV !== "mock"){
+if(process.env.NODE_ENV !== "mock"){
     socket.on("connect", () => {
         
         socket.emit("set-store", STORE + "-" + process.env.NODE_ENV)
