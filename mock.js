@@ -1,22 +1,32 @@
 module.exports = function( socket ){
-    let screenshot = null
 
-    const select = 1 
+    const fs = require("fs");
+    let imageNames = [];
+    let iteration = 0;
+    const STORE = process.env.store
 
-    const mockSelector = [
-        "not_on_unassigned.png",
-        "difficulty_1.png",
-        "difficulty_2.png",
-        "difficulty_3.png"
-    ]
+    fs.readdirAsync = function(dirname) {
+        return new Promise(function(resolve, reject) {
+            fs.readdir(dirname, function(err, filenames){
+                if (err) 
+                    reject(err); 
+                else 
+                    resolve(filenames);
+            });
+        });
+    };
 
+    fs.readdirAsync('./mock-images').then((filenames) => {
+        filenames = filenames.filter(file => isFileType(file, "png"))
+        imageNames = filenames
+    })
+    
     socket.on("connect", () => {
 
         socket.emit("set-store", process.env.store + "-" + process.env.NODE_ENV)
         
         console.log("CONNECTION: ", socket.connected);
-        
-        screenshot = require("fs").readFileSync(`./mock-images/${mockSelector[select]}`)
+ 
     });
 
     socket.on("disconnect", () => {
@@ -24,8 +34,34 @@ module.exports = function( socket ){
     });
     
     socket.on("send-capture", () => {
-        if(screenshot){
-            socket.emit("capture", {STORE: process.env.store, screenshot})
-        };
+        const path = `./mock-images/${imageNames[iteration]}`
+        if(fs.existsSync(path)){
+            fs.readFile(path, (err, screenshot) => {
+                if(err) return socket.emit("error", err)
+                socket.emit("capture", {STORE, screenshot})
+            })
+            iteration ++;
+        } else {
+            fs.readFile(`./mock-images/${imageNames[0]}`, (err, screenshot) => {
+                if(err) return socket.emit("error", err)
+                socket.emit("capture", {STORE, screenshot})
+            })
+            iteration = 0;
+        }
     });
+
+    fs.readdirAsync = function(dirname) {
+        return new Promise(function(resolve, reject) {
+            fs.readdir(dirname, function(err, filenames){
+                if (err) 
+                    reject(err); 
+                else 
+                    resolve(filenames);
+            });
+        });
+    };
+    
+    function isFileType (filename, type) {
+        return(filename.split(".")[1] == type)
+    }
 }
