@@ -1,5 +1,6 @@
 module.exports = function( socket ){
 
+    const dirPath = '../../d/success images/scraps'
     const fs = require("fs");
     let imageNames = [];
     let iteration = 0;
@@ -16,7 +17,7 @@ module.exports = function( socket ){
         });
     };
 
-    fs.readdirAsync('./mock-images').then((filenames) => {
+    fs.readdirAsync(dirPath).then((filenames) => {
         filenames = filenames.filter(file => isFileType(file, "png"))
         imageNames = filenames
     })
@@ -34,15 +35,15 @@ module.exports = function( socket ){
     });
     
     socket.on("send-capture", () => {
-        const path = `./mock-images/${imageNames[iteration]}`
-        if(fs.existsSync(path)){
-            fs.readFile(path, (err, screenshot) => {
+        const filePath = `${dirPath}/${imageNames[iteration]}`
+        if(fs.existsSync(filePath)){
+            fs.readFile(filePath, (err, screenshot) => {
                 if(err) return socket.emit("error", err)
                 socket.emit("capture", {STORE, screenshot})
             })
             iteration ++;
         } else {
-            fs.readFile(`./mock-images/${imageNames[0]}`, (err, screenshot) => {
+            fs.readFile(`${filePath}/${imageNames[0]}`, (err, screenshot) => {
                 if(err) return socket.emit("error", err)
                 socket.emit("capture", {STORE, screenshot})
             })
