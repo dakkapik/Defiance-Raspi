@@ -43,7 +43,7 @@ module.exports = function( socket ){
             })
             iteration ++;
         } else {
-            fs.readFile(`${filePath}/${imageNames[0]}`, (err, screenshot) => {
+            fs.readFile(`${dirPath}/${imageNames[0]}`, (err, screenshot) => {
                 if(err) return socket.emit("error", err)
                 socket.emit("capture", {STORE, screenshot})
             })
