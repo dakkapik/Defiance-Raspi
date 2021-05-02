@@ -27,7 +27,8 @@ const socket = require("socket.io-client")(ENDPOINT);
 const puppeteer = require("puppeteer");
 
 let browserSelect = {};
-let page = null ;
+let capturePage = null;
+let puppetBrowser = null;
 
 if(process.platform === "linux"){
     browserSelect = { executablePath: 'chromium-browser' };
@@ -40,21 +41,27 @@ if(process.env.NODE_ENV !== "mock"){
         
         console.log("CONNECTION: ", socket.connected);
 
-        startBrowser()
-        .then(pag => page = pag)
+        startBrowser(browserSelect)
+        .then(({page, browser}) => {
+            capturePage = page
+            puppetBrowser = browser
+        })
         .catch((error) => emitError(error));
     
     });
     
     socket.on("disconnect", () => {
-    
+        
         console.log("CONNECTION: ", socket.connected);
-    
+
+        puppetBrowser.close()
+        .then(() => puppetBrowser = null)
+        
     });
     
     socket.on("send-capture", () => {
-        if(page){
-            page.screenshot({type: "png", omitBackground: true})
+        if(capturePage){
+            capturePage.screenshot({type: "png", omitBackground: true})
             .then(screenshot => {
                 socket.emit("capture", {STORE, screenshot});
             })
@@ -80,7 +87,7 @@ function startBrowser(){
             .then(page => {
                 page.setDefaultNavigationTimeout(0);
                 page.goto(CAPTURE_IP)
-                .then(() => resolve( page ))
+                .then(() => resolve({page, browser}))
                 .catch(err => reject({fn: "goto", err}))
             })
             .catch(err => reject({fn: "newPage", err}))
