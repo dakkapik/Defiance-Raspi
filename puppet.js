@@ -11,17 +11,21 @@ if(!process.env.store){
     process.exit();
 }
 
+process.env.DEVICE_NAME = "raspi-" + makeId(5);
+
 const { 
     capture: CAPTURE_IP, 
     extract: ENDPOINT 
 } = require("config").get("endpoints")
 
-const STORE = process.env.store;
+const store = process.env.STORE;
+const deviceName = process.env.DEVICE_NAME;
+const env = process.env.NODE_ENV
 
-console.log("staring capture client in ", process.env.NODE_ENV, " mode");
+console.log("staring capture client in ", env, " mode");
 console.log("capture ip: ", CAPTURE_IP);
 console.log("extract endpoint: ", ENDPOINT);
-console.log("selected store: ", STORE);
+console.log("selected store: ", store);
 
 const socket = require("socket.io-client")(ENDPOINT);
 const puppeteer = require("puppeteer");
@@ -34,10 +38,14 @@ if(process.platform === "linux"){
     browserSelect = { executablePath: 'chromium-browser' };
 };
 
-if(process.env.NODE_ENV !== "mock"){
+if(env !== "mock"){
     socket.on("connect", () => {
-        
-        socket.emit("set-store", STORE + "-" + process.env.NODE_ENV)
+        //make raspi name
+        socket.emit("set-capture-device", {
+            name: deviceName, 
+            store: store, 
+            mode: env
+        })
         
         console.log("CONNECTION: ", socket.connected);
 
@@ -63,10 +71,19 @@ if(process.env.NODE_ENV !== "mock"){
         if(capturePage){
             capturePage.screenshot({type: "png", omitBackground: true})
             .then(screenshot => {
-                socket.emit("capture", {STORE, screenshot});
+                socket.emit("capture", { name: deviceName, screenshot });
             })
             .catch(err => emitError({fn: "screenshot", err}));
         };
+    });
+
+    // socket.on("stores", (stores) => {
+    //     console.log(stores)
+    // })
+
+    socket.on("error", (error) => {
+        console.log(error);
+        socket.close();
     });
 } else {
     require("./mock")(socket)
@@ -95,3 +112,13 @@ function startBrowser(){
         .catch(err => reject({fn:"puppeteer.launch", err}))
     });
 };
+
+function makeId(length) {
+    var result           = [];
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result.push(characters.charAt(Math.floor(Math.random() * charactersLength)));
+   }
+   return result.join('');
+}
