@@ -1,5 +1,5 @@
 require("dotenv").config(); 
-
+//create .env file on start
 if(!process.env.NODE_ENV){
     console.log("CRITICAL ERROR: NODE_ENV not found");
     console.log("CRITICAL ERROR: add NODE_ENV to .env file");
