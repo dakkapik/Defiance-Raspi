@@ -1,6 +1,6 @@
 module.exports = function( socket ){
 
-    const dirPath = '../../d/success images/scraps'
+    const dirPath = '../../d/success images/test'
     const fs = require("fs");
     let imageNames = [];
     let iteration = 0;
@@ -24,7 +24,11 @@ module.exports = function( socket ){
     
     socket.on("connect", () => {
 
-        socket.emit("set-store", process.env.store + "-" + process.env.NODE_ENV)
+        socket.emit("set-capture-device", {
+            name: process.env.DEVICE_NAME, 
+            store: process.env.STORE, 
+            mode: process.env.NODE_ENV
+        })
         
         console.log("CONNECTION: ", socket.connected);
  
@@ -39,13 +43,19 @@ module.exports = function( socket ){
         if(fs.existsSync(filePath)){
             fs.readFile(filePath, (err, screenshot) => {
                 if(err) return socket.emit("error", err)
-                socket.emit("capture", {STORE, screenshot})
+                socket.emit("capture", {
+                    name: process.env.DEVICE_NAME,
+                    screenshot
+                })
             })
             iteration ++;
         } else {
             fs.readFile(`${dirPath}/${imageNames[0]}`, (err, screenshot) => {
                 if(err) return socket.emit("error", err)
-                socket.emit("capture", {STORE, screenshot})
+                socket.emit("capture", {
+                    name: process.env.DEVICE_NAME,
+                    screenshot
+                })
             })
             iteration = 0;
         }
