@@ -5,7 +5,7 @@ if(!process.env.NODE_ENV){
     console.log("CRITICAL ERROR: add NODE_ENV to .env file");
     process.exit();
 }
-if(!process.env.store){
+if(!process.env.STORE){
     console.log("CRITICAL ERROR: store not found");
     console.log("CRITICAL ERROR: add store to .env file");
     process.exit();

@@ -4,7 +4,7 @@ module.exports = function( socket ){
     const fs = require("fs");
     let imageNames = [];
     let iteration = 0;
-    const STORE = process.env.store
+    const STORE = process.env.STORE
 
     fs.readdirAsync = function(dirname) {
         return new Promise(function(resolve, reject) {
