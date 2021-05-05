@@ -1,6 +1,6 @@
 module.exports = function( socket ){
 
-    const dirPath = '../../d/success images/test'
+    const dirPath = '../test img'
     const fs = require("fs");
     let imageNames = [];
     let iteration = 0;
