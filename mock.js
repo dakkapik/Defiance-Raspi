@@ -1,6 +1,6 @@
 module.exports = function( socket ){
 
-    const dirPath = '../test img'
+    const dirPath = './mock-images'
     const fs = require("fs");
     let imageNames = [];
     let iteration = 0;
