@@ -1,4 +1,9 @@
-require("dotenv").config(); 
+const envPath = "../.env"
+if(!require("fs").existsSync(envPath)){
+    //MANAGE STORE GENERATION ON STARTUP?
+    require("fs").writeFileSync(envPath, "NODE_ENV=test\nSTORE=psq2")
+}
+require("dotenv").config({path: envPath}); 
 //create .env file on start
 if(!process.env.NODE_ENV){
     console.log("CRITICAL ERROR: NODE_ENV not found");
