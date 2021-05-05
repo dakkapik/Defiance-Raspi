@@ -43,7 +43,7 @@ if(process.platform === "linux"){
     browserSelect = { executablePath: 'chromium-browser' };
 };
 
-if(env !== "mock"){
+if(env !== "mock" || env !== "mock-r"){
     socket.on("connect", () => {
         //make raspi name
         socket.emit("set-capture-device", {
